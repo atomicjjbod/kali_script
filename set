@@ -1,0 +1,32 @@
+#!/bin/bash
+
+IMG_URL="https://i1.sndcdn.com/artworks-000073953490-dvsfhf-t1080x1080.jpg"
+TMP_IMG="/tmp/wallpaper_original.jpg"
+RESIZED_IMG="/tmp/wallpaper_resized.jpg"
+
+
+CURRENT_WALLPAPER=$(xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/image-path)
+
+if [ -z "$CURRENT_WALLPAPER" ]; then
+  echo "Failed to get current wallpaper path."
+  exit 1
+fi
+
+echo "Current wallpaper path: $CURRENT_WALLPAPER"
+
+
+wget -q -O "$TMP_IMG" "$IMG_URL"
+
+
+convert "$TMP_IMG" -resize 1920x1080\! "$RESIZED_IMG"
+
+
+cp "$CURRENT_WALLPAPER" "${CURRENT_WALLPAPER}.bak"
+
+
+cp "$RESIZED_IMG" "$CURRENT_WALLPAPER"
+
+
+xfdesktop --reload
+
+echo "Wallpaper replaced and resized."
